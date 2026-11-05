@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IPL Ticket Booking</title>
+  <link rel="stylesheet" href="CSS_folder/style.css">
 </head>
 <body>
   <header>
@@ -71,7 +72,7 @@
         <option value="gt">Gujarat Titans</option>
         <option value="lsg">Lucknow Super Giants</option>
       </select>
-      <table border="1" cellpadding="8" cellspacing="0" width="100%">
+      <table>
         <caption>Example IPL 2026 fixtures and sample ticket prices (not official)</caption>
         <colgroup span="4"></colgroup>
         <colgroup span="3"></colgroup>
@@ -189,8 +190,12 @@
       </aside>
     </section>
     <section id="my-bookings" aria-labelledby="my-bookings-heading">
-      <h2 id="my-bookings-heading">My Ticket Bookings</h2>
-      <table border="1" cellpadding="8" cellspacing="0" width="100%">
+      <div class="bookings-header">
+        <h2 id="my-bookings-heading">My Ticket Bookings</h2>
+        <button id="clear-bookings" type="button">Clear Bookings</button>
+      </div>
+      <p id="bookings-status" role="status" aria-live="polite"></p>
+      <table>
         <caption>Your ticket booking records</caption>
         <thead>
           <tr>
@@ -228,144 +233,6 @@
     <p>&copy; 2026 IPL Ticket Booking. All rights reserved.</p>
     <p>This website is a sample ticket booking project and is not affiliated with the official IPL.</p>
   </footer>
-  <script>
-    const matchRows = Array.from(document.querySelectorAll("#matches tbody tr"));
-    const matchSelect = document.getElementById("booking-match");
-    const teamFilter = document.getElementById("team-filter");
-    const bookingForm = document.querySelector("#book-ticket form");
-    const standSelect = document.getElementById("stand-category");
-    const quantityInput = document.getElementById("ticket-quantity");
-    const bookingRecords = document.getElementById("booking-records");
-    const bookingStatus = document.getElementById("booking-confirmation");
-    const storageKey = "iplTicketBookings";
-    const currency = new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0
-    });
-
-    function renderBookings(records) {
-      bookingRecords.replaceChildren();
-
-      records.forEach((booking) => {
-        const row = document.createElement("tr");
-        [
-          booking.id,
-          booking.match,
-          booking.date,
-          booking.venue,
-          booking.stand,
-          String(booking.quantity),
-          booking.total,
-          booking.status
-        ].forEach((value) => {
-          const cell = document.createElement("td");
-          cell.textContent = value;
-          row.appendChild(cell);
-        });
-        bookingRecords.appendChild(row);
-      });
-    }
-
-    let bookings;
-    try {
-      const savedBookings = localStorage.getItem(storageKey);
-      bookings = savedBookings ? JSON.parse(savedBookings) : [];
-      if (!Array.isArray(bookings)) {
-        throw new Error("Saved booking data is not a list.");
-      }
-      renderBookings(bookings);
-    } catch (error) {
-      bookingStatus.textContent =
-        "Saved bookings could not be loaded from this browser. Please check browser storage before booking.";
-      bookingForm.querySelector('button[type="submit"]').disabled = true;
-      console.error("Unable to load saved ticket bookings:", error);
-    }
-
-    matchRows.forEach((row) => {
-      const option = document.createElement("option");
-      option.value = row.dataset.matchId;
-      option.textContent = `Match ${row.cells[0].textContent}: ${row.cells[1].textContent}`;
-      matchSelect.appendChild(option);
-    });
-
-    teamFilter.addEventListener("change", () => {
-      const selectedTeam = teamFilter.value;
-      matchRows.forEach((row) => {
-        row.hidden = selectedTeam !== "all" && !row.dataset.teams.split(" ").includes(selectedTeam);
-      });
-    });
-
-    document.querySelectorAll("[data-book-match]").forEach((link) => {
-      link.addEventListener("click", () => {
-        matchSelect.value = link.dataset.bookMatch;
-      });
-    });
-
-    bookingForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      if (!Array.isArray(bookings)) {
-        bookingStatus.textContent =
-          "This booking cannot be saved because browser storage is unavailable.";
-        return;
-      }
-
-      const selectedRow = matchRows.find((row) => row.dataset.matchId === matchSelect.value);
-      if (!selectedRow) {
-        matchSelect.setCustomValidity("Please select a match from the schedule.");
-        matchSelect.reportValidity();
-        return;
-      }
-      matchSelect.setCustomValidity("");
-
-      const standPrices = {
-        general: selectedRow.cells[4].textContent,
-        premium: selectedRow.cells[5].textContent,
-        vip: selectedRow.cells[6].textContent
-      };
-      const selectedStand = standSelect.value;
-      const price = Number(standPrices[selectedStand].replace(/[^\d]/g, ""));
-      const quantity = Number(quantityInput.value);
-      const total = price * quantity;
-      if (!Number.isFinite(price) || price <= 0 || !Number.isSafeInteger(quantity) || quantity < 1) {
-        bookingStatus.textContent =
-          "Please select a valid stand category and ticket quantity.";
-        return;
-      }
-
-      const booking = {
-        id: `IPL-${Date.now().toString(36).toUpperCase()}`,
-        match: `Match ${selectedRow.cells[0].textContent}: ${selectedRow.cells[1].textContent}`,
-        date: selectedRow.cells[2].textContent,
-        venue: selectedRow.cells[3].textContent,
-        stand: standSelect.options[standSelect.selectedIndex].textContent,
-        quantity,
-        total: currency.format(total),
-        status: "Submitted"
-      };
-      const updatedBookings = [...bookings, booking];
-      try {
-        localStorage.setItem(storageKey, JSON.stringify(updatedBookings));
-      } catch (error) {
-        bookingStatus.textContent =
-          "Booking could not be saved. Check browser storage availability and try again.";
-        console.error("Unable to save ticket booking:", error);
-        return;
-      }
-      bookings = updatedBookings;
-      renderBookings(bookings);
-
-      document.getElementById("summary-match").textContent =
-        booking.match;
-      document.getElementById("summary-date").textContent = selectedRow.cells[2].textContent;
-      document.getElementById("summary-venue").textContent = selectedRow.cells[3].textContent;
-      document.getElementById("summary-stand").textContent = booking.stand;
-      document.getElementById("summary-price").textContent = currency.format(price);
-      document.getElementById("summary-quantity").textContent = String(quantity);
-      document.getElementById("summary-total").textContent = currency.format(total);
-      bookingStatus.textContent =
-        `Booking ${booking.id} was saved in this browser. This demo does not process payment or reserve official tickets.`;
-    });
-  </script>
+  <script src="JS_folder/app.js"></script>
 </body>
 </html>
