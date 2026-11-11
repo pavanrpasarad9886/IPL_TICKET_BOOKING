@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticket Booking</title>
+  <link rel="stylesheet" href="CSS_folder/style.css">
+</head>
+<body>
+  <header>
+    <h1>IPL TICKET BOOKING</h1>
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#matches">Matches</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="book-ticket" class="booking-form-section" aria-labelledby="booking-heading">
+      <h2 id="booking-heading">Ticket Booking Form</h2>
+      <form action="#" method="get">
+        <div>
+          <label for="customer-name">Name:</label>
+          <input type="text" id="customer-name" name="name" autocomplete="name" required minlength="2" maxlength="50">
+        </div>
+        <div>
+          <label for="customer-email">Email:</label>
+          <input type="email" id="customer-email" name="email" autocomplete="email" required maxlength="254">
+        </div>
+        <div>
+          <label for="customer-phone">Phone Number:</label>
+          <input type="tel" id="customer-phone" name="phone" autocomplete="tel" placeholder="10 digit phone number" required minlength="10" maxlength="10" pattern="[0-9]{10}" title="Enter exactly 10 digits">
+        </div>
+        <div>
+          <label for="booking-match">Match Selection:</label>
+          <select id="booking-match" name="match" required>
+            <option value="">Select a match</option>
+            <option value="match-01" data-date="March 28, 2026, 7:30 PM" data-venue="M. A. Chidambaram Stadium, Chennai">Chennai Super Kings vs Mumbai Indians</option>
+            <option value="match-02" data-date="March 29, 2026, 7:30 PM" data-venue="M. Chinnaswamy Stadium, Bengaluru">Royal Challengers Bengaluru vs Kolkata Knight Riders</option>
+            <option value="match-03" data-date="March 30, 2026, 7:30 PM" data-venue="Sawai Mansingh Stadium, Jaipur">Rajasthan Royals vs Sunrisers Hyderabad</option>
+            <option value="match-04" data-date="March 31, 2026, 7:30 PM" data-venue="Arun Jaitley Stadium, Delhi">Delhi Capitals vs Punjab Kings</option>
+            <option value="match-05" data-date="April 1, 2026, 7:30 PM" data-venue="Narendra Modi Stadium, Ahmedabad">Gujarat Titans vs Lucknow Super Giants</option>
+            <option value="match-06" data-date="April 2, 2026, 7:30 PM" data-venue="Wankhede Stadium, Mumbai">Mumbai Indians vs Kolkata Knight Riders</option>
+            <option value="match-07" data-date="April 3, 2026, 7:30 PM" data-venue="M. A. Chidambaram Stadium, Chennai">Chennai Super Kings vs Rajasthan Royals</option>
+            <option value="match-08" data-date="April 4, 2026, 7:30 PM" data-venue="Rajiv Gandhi International Cricket Stadium, Hyderabad">Sunrisers Hyderabad vs Royal Challengers Bengaluru</option>
+            <option value="match-09" data-date="April 5, 2026, 3:30 PM" data-venue="New PCA Stadium, Mullanpur">Punjab Kings vs Gujarat Titans</option>
+            <option value="match-10" data-date="April 5, 2026, 7:30 PM" data-venue="Ekana Cricket Stadium, Lucknow">Lucknow Super Giants vs Delhi Capitals</option>
+            <option value="match-11" data-date="April 6, 2026, 7:30 PM" data-venue="Eden Gardens, Kolkata">Kolkata Knight Riders vs Chennai Super Kings</option>
+            <option value="match-12" data-date="April 7, 2026, 7:30 PM" data-venue="Wankhede Stadium, Mumbai">Mumbai Indians vs Royal Challengers Bengaluru</option>
+          </select>
+        </div>
+        <div>
+          <label for="stand-category">Stand Category:</label>
+          <select id="stand-category" name="stand-category" required>
+            <option value="">Select a stand category</option>
+            <option value="general">General</option>
+            <option value="premium">Premium</option>
+            <option value="vip">VIP</option>
+          </select>
+        </div>
+        <div>
+          <label for="ticket-quantity">Number of Tickets:</label>
+          <input type="number" id="ticket-quantity" name="ticket-quantity" min="1" max="10" required>
+        </div>
+        <div>
+          <fieldset class="booking-preference">
+            <legend>Booking Preference:</legend>
+            <label><input type="radio" name="booking-preference" value="standard" checked> Standard</label>
+            <label><input type="radio" name="booking-preference" value="family"> Family</label>
+          </fieldset>
+        </div>
+        <button type="submit">Submit Booking</button>
+        <button type="reset">Reset</button>
+      </form>
+      <p id="booking-status" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 IPL Ticket Booking. All rights reserved.</p>
+    <p>This website is a sample ticket booking project and is not affiliated with the official IPL.</p>
+  </footer>
+  <script src="JS_folder/app.js"></script>
+</body>
+</html>
