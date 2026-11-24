@@ -44,7 +44,7 @@ function setupMatchLinks() {
 
     link.addEventListener("click", () => {
       try {
-        const matchName = link.closest("tr")?.querySelectorAll("td")[1]?.textContent?.trim();
+        const matchName = link.closest(".match-card")?.querySelector("h3")?.textContent?.trim();
         sessionStorage.setItem(
           TOAST_STORAGE_KEY,
           matchName ? `${matchName} selected.` : "Match selected."
@@ -54,6 +54,72 @@ function setupMatchLinks() {
       }
     });
   });
+}
+
+function setupMobileMenu() {
+  const toggle = document.querySelector("#nav-toggle");
+  const navigation = document.querySelector("#main-navigation");
+  if (!toggle || !navigation) return;
+
+  function closeMenu() {
+    navigation.classList.remove("is-open");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Open navigation");
+  }
+
+  toggle.addEventListener("click", () => {
+    const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+    navigation.classList.toggle("is-open", !isExpanded);
+    toggle.setAttribute("aria-expanded", String(!isExpanded));
+    toggle.setAttribute("aria-label", isExpanded ? "Open navigation" : "Close navigation");
+  });
+
+  navigation.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", closeMenu);
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeMenu();
+  });
+}
+
+function setupMatchViews() {
+  const grid = document.querySelector("#match-grid");
+  if (!grid) return;
+
+  const teamFilter = document.querySelector("#team-filter");
+  const matchCount = document.querySelector("#match-count");
+  const emptyMessage = document.querySelector("#match-empty");
+  const cards = Array.from(grid.querySelectorAll(".match-card"));
+  const viewButtons = document.querySelectorAll("[data-match-view]");
+
+  function filterMatches() {
+    const selectedTeam = teamFilter.value;
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const teams = card.dataset.teams.split(/\s+/);
+      const isVisible = selectedTeam === "all" || teams.includes(selectedTeam);
+      card.hidden = !isVisible;
+      if (isVisible) visibleCount += 1;
+    });
+
+    matchCount.textContent = `${visibleCount} match${visibleCount === 1 ? "" : "es"} shown.`;
+    emptyMessage.hidden = visibleCount > 0;
+  }
+
+  teamFilter.addEventListener("change", filterMatches);
+  viewButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      const view = button.dataset.matchView;
+      grid.dataset.view = view;
+      viewButtons.forEach(viewButton => {
+        viewButton.setAttribute("aria-pressed", String(viewButton === button));
+      });
+    });
+  });
+
+  filterMatches();
 }
 
 function setupSmoothBookingScroll() {
@@ -256,6 +322,8 @@ function setupBookingsList() {
 }
 
 setupMatchLinks();
+setupMobileMenu();
+setupMatchViews();
 setupBookingForm();
 setupBookingsList();
 setupSmoothBookingScroll();
