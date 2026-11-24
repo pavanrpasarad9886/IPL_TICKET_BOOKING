@@ -14,6 +14,7 @@ body {
   background: var(--background);
   color: var(--text);
   font: 16px/1.6 Arial, Helvetica, sans-serif;
+  scroll-behavior: smooth;
 }
 
 header > h1 {
@@ -300,6 +301,35 @@ td a {
 .booking-summary dd { margin: 0; overflow-wrap: anywhere; }
 #guidelines article + article { margin-top: 1rem; }
 #guidelines article p { margin-bottom: 0; }
+
+#toast-container {
+  position: fixed;
+  z-index: 2000;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: min(360px, calc(100% - 2.5rem));
+}
+
+.toast {
+  padding: 0.85rem 1rem;
+  border-left: 4px solid #1f7a4c;
+  border-radius: 0.4rem;
+  background: #fff;
+  box-shadow: 0 8px 24px rgb(16 42 86 / 20%);
+  color: var(--text);
+  opacity: 1;
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.toast-error { border-left-color: #c62828; }
+
+.toast-hiding {
+  opacity: 0;
+  transform: translateY(0.5rem);
+}
 
 footer {
   margin-top: 3rem;
