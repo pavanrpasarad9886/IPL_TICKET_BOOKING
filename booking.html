@@ -74,6 +74,19 @@
         <button type="submit">Submit Booking</button>
         <button type="reset">Reset</button>
       </form>
+      <aside class="booking-summary" id="booking-summary" aria-labelledby="booking-summary-heading">
+        <h3 id="booking-summary-heading">Booking Summary</h3>
+        <dl>
+          <dt>Match</dt><dd id="summary-match">Not selected</dd>
+          <dt>Date &amp; Time</dt><dd id="summary-date">—</dd>
+          <dt>Venue</dt><dd id="summary-venue">—</dd>
+          <dt>Stand</dt><dd id="summary-stand">Not selected</dd>
+          <dt>Tickets</dt><dd id="summary-quantity">—</dd>
+          <dt>Price per ticket</dt><dd id="summary-unit-price">—</dd>
+          <dt>Total</dt><dd id="summary-total" class="summary-total">—</dd>
+        </dl>
+        <p id="summary-message">Choose a match and stand, then enter a quantity from 1 to 10.</p>
+      </aside>
       <p id="booking-status" role="status" aria-live="polite"></p>
     </section>
   </main>

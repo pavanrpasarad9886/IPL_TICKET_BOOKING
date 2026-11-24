@@ -181,11 +181,11 @@ td a {
 }
 
 #book-ticket.booking-form-section {
-  grid-template-columns: minmax(0, 640px);
-  justify-content: center;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 1fr);
 }
 
 #book-ticket h2 { grid-column: 1 / -1; margin-bottom: 0; }
+#booking-status { grid-column: 1 / -1; }
 
 #book-ticket form,
 .booking-summary,
@@ -299,6 +299,8 @@ td a {
 
 .booking-summary dt { font-weight: 700; }
 .booking-summary dd { margin: 0; overflow-wrap: anywhere; }
+#booking-summary .summary-total { color: var(--primary); font-size: 1.1rem; font-weight: 700; }
+#summary-message { margin-bottom: 0; color: #526176; font-size: 0.9rem; }
 #guidelines article + article { margin-top: 1rem; }
 #guidelines article p { margin-bottom: 0; }
 
@@ -343,5 +345,6 @@ footer p { margin: 0.35rem 0; }
 
 @media (max-width: 700px) {
   #book-ticket { grid-template-columns: 1fr; }
+  #book-ticket.booking-form-section { grid-template-columns: 1fr; }
   #book-ticket h2 { grid-column: auto; }
 }

@@ -1,5 +1,6 @@
 const BOOKINGS_KEY = "ipl-ticket-bookings";
 const TOAST_STORAGE_KEY = "ipl-toast-message";
+const TICKET_PRICES = { general: 800, premium: 1800, vip: 4500 };
 
 function showToast(message, type = "success") {
   let container = document.querySelector("#toast-container");
@@ -84,37 +85,90 @@ function setupBookingForm() {
   if (!form) return;
 
   const status = document.querySelector("#booking-status");
-  const matchSelect = form.elements.namedItem("match");
+  const matchSelect = form.querySelector("#booking-match");
+  const standSelect = form.querySelector("#stand-category");
+  const quantityInput = form.querySelector("#ticket-quantity");
+  const nameInput = form.querySelector("#customer-name");
+  const emailInput = form.querySelector("#customer-email");
+  const phoneInput = form.querySelector("#customer-phone");
+  const summaryMatch = document.querySelector("#summary-match");
+  const summaryDate = document.querySelector("#summary-date");
+  const summaryVenue = document.querySelector("#summary-venue");
+  const summaryStand = document.querySelector("#summary-stand");
+  const summaryQuantity = document.querySelector("#summary-quantity");
+  const summaryUnitPrice = document.querySelector("#summary-unit-price");
+  const summaryTotal = document.querySelector("#summary-total");
+  const summaryMessage = document.querySelector("#summary-message");
   const matchFromUrl = new URLSearchParams(window.location.search).get("match");
 
   if (matchFromUrl && Array.from(matchSelect.options).some(option => option.value === matchFromUrl)) {
     matchSelect.value = matchFromUrl;
   }
 
+  const readSelection = () => ({
+    match: matchSelect.selectedOptions[0],
+    stand: standSelect.selectedOptions[0],
+    quantity: Number(quantityInput.value),
+  });
+  let selection = readSelection();
+  const currency = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  });
+  const updateSummary = (notify = false) => {
+    selection = readSelection();
+
+    const { match, stand, quantity } = selection;
+    const hasMatch = Boolean(match.value);
+    const hasStand = Boolean(stand.value);
+    const hasValidQuantity = quantityInput.value !== "" && quantityInput.validity.valid;
+    const hasCompleteSelection = hasMatch && hasStand && hasValidQuantity;
+
+    summaryMatch.textContent = hasMatch ? match.textContent.trim() : "Not selected";
+    summaryDate.textContent = hasMatch ? match.dataset.date : "—";
+    summaryVenue.textContent = hasMatch ? match.dataset.venue : "—";
+    summaryStand.textContent = hasStand ? stand.textContent.trim() : "Not selected";
+    summaryQuantity.textContent = hasValidQuantity ? String(quantity) : "—";
+    summaryUnitPrice.textContent = hasStand ? currency.format(TICKET_PRICES[stand.value]) : "—";
+    summaryTotal.textContent = hasCompleteSelection
+      ? currency.format(TICKET_PRICES[stand.value] * quantity)
+      : "—";
+    summaryMessage.textContent = hasCompleteSelection
+      ? "Your total reflects the selected stand and ticket quantity."
+      : "Choose a match and stand, then enter a quantity from 1 to 10.";
+
+    if (notify) showToast("Booking summary updated.");
+  };
+
+  [matchSelect, standSelect, quantityInput].forEach(control => {
+    control.addEventListener("change", () => updateSummary(true));
+  });
+  quantityInput.addEventListener("input", () => updateSummary());
+  form.addEventListener("reset", () => window.setTimeout(() => updateSummary(), 0));
+  updateSummary();
+
   form.addEventListener("submit", event => {
     event.preventDefault();
 
-    const selectedMatch = matchSelect.selectedOptions[0];
-    const standSelect = form.elements.namedItem("stand-category");
-    const selectedStand = standSelect.selectedOptions[0];
-    const quantity = Number(form.elements.namedItem("ticket-quantity").value);
-    const prices = { general: 800, premium: 1800, vip: 4500 };
+    const { match: selectedMatch, stand: selectedStand, quantity } = selection;
+    const preferenceInput = form.querySelector('[name="booking-preference"]:checked');
 
     try {
       const bookings = getBookings();
       const booking = {
         id: `IPL-${Date.now()}`,
-        name: form.elements.namedItem("name").value.trim(),
-        email: form.elements.namedItem("email").value.trim(),
-        phone: form.elements.namedItem("phone").value.trim(),
+        name: nameInput.value.trim(),
+        email: emailInput.value.trim(),
+        phone: phoneInput.value.trim(),
         matchId: selectedMatch.value,
         match: selectedMatch.textContent.trim(),
         date: selectedMatch.dataset.date,
         venue: selectedMatch.dataset.venue,
         stand: selectedStand.textContent.trim(),
         quantity,
-        total: prices[selectedStand.value] * quantity,
-        preference: form.elements.namedItem("booking-preference").value,
+        total: TICKET_PRICES[selectedStand.value] * quantity,
+        preference: preferenceInput.value,
         status: "Confirmed",
       };
 
